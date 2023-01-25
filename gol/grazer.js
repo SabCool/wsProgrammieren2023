@@ -1,4 +1,4 @@
-class Grazer {
+module.exports =  class Grazer {
     constructor(x, y) {
         // Farbe - yellow
         this.colorValue = 2;
@@ -60,9 +60,17 @@ class Grazer {
     eat() {
         let fields = this.findFields(1);
         if (fields.length > 0) {
-            let pos = random(fields);
+            let pos = fields[Math.floor(Math.random() * fields.length)];
             this.updateGameAndPos(pos[0], pos[1]);
-            removeFromList(this, grassArr); // Gras löschen
+            for(let i=0; i< grassArr.length; i++){
+                let grObj = grassArr[i];
+                if(grObj.x == this.x && grObj.y == this.y){
+                    // lösche das grasObj
+                    grassArr.splice(i, 1); // index, wieviele Element löschen
+                    break;
+                }
+            }
+            // removeFromList(this, grassArr); // Gras löschen
 
             this.eatCount++;
             this.notEaten = 0;
@@ -83,22 +91,34 @@ class Grazer {
     move() {
         let emptyFields = this.findFields(0);
         if (emptyFields.length > 0) {
-            let pos = random(emptyFields);
+            let pos = emptyFields[Math.floor(Math.random() * emptyFields.length)];
             this.updateGameAndPos(pos[0], pos[1]);
         }
     }
 
     die() {
         matrix[this.y][this.x] = 0;
-        removeFromList(this, grazerArr);
+        for(let i=0; i< grazerArr.length; i++){
+            let grObj = grazerArr[i];
+            if(grObj.x == this.x && grObj.y == this.y){
+                // lösche das grasObj
+                grazerArr.splice(i, 1); // index, wieviele Element löschen
+                break;
+            }
+        }
+        // removeFromList(this, grazerArr);
     }
 
     mul() {
         if (this.eatCount >= 5) {
-            let pos = findRandomPosFor(this, 0);
-            if (pos !== undefined) {
-                grazerArr.push(new Grazer(pos[0], pos[1]));
-                matrix[pos[1]][pos[0]] = this.colorValue;
+            // let pos = findRandomPosFor(this, 0);
+            let emptyFields = this.findFields(0);
+            if (emptyFields.length > 0) {
+                let newPos = emptyFields[Math.floor(Math.random() * emptyFields.length)];
+                let newX = newPos[0];
+                let newY = newPos[1];
+                grazerArr.push(new Grazer(newX, newY));
+                matrix[newY][newX] = this.colorValue;
             }
             this.eatCount = 0;
         }

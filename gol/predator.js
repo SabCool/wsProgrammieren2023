@@ -1,4 +1,4 @@
-class Predator {
+module.exports = class Predator {
     constructor(x, y) {
         // Farbe - red
         this.colorValue = 3;
@@ -60,9 +60,17 @@ class Predator {
     eat() {
         let fields = this.findFields(2);
         if (fields.length > 0) {
-            let pos = random(fields);
+            let pos = fields[Math.floor(Math.random() * fields.length)];
             this.updateGameAndPos(pos[0], pos[1]);
-            removeFromList(this, grazerArr); // Grasfresser löschen
+            for(let i=0; i< grazerArr.length; i++){
+                let grObj = grazerArr[i];
+                if(grObj.x == this.x && grObj.y == this.y){
+                    // lösche das grasObj
+                    grazerArr.splice(i, 1); // index, wieviele Element löschen
+                    break;
+                }
+            }
+            // removeFromList(this, grazerArr); // Grasfresser löschen
 
             this.eatCount++;
             this.notEaten = 0;
@@ -84,21 +92,29 @@ class Predator {
     move() {
         let emptyFields = this.findFields(0);
         if (emptyFields.length > 0) {
-            let pos = random(emptyFields);
+            let pos = emptyFields[Math.floor(Math.random() * emptyFields.length)];
             this.updateGameAndPos(pos[0], pos[1]);
         }
     }
 
     die() {
         matrix[this.y][this.x] = 0;
-        removeFromList(this, predArr);
+        for(let i=0; i< predArr.length; i++){
+            let grObj = predArr[i];
+            if(grObj.x == this.x && grObj.y == this.y){
+                // lösche das grasObj
+                predArr.splice(i, 1); // index, wieviele Element löschen
+                break;
+            }
+        }
+        // removeFromList(this, predArr);
     }
 
     mul() {
         if (this.eatCount >= 5) {
             let emptyFields = this.findFields(0);
             if (emptyFields.length > 0) {
-                let pos = random(emptyFields);
+                let pos = emptyFields[Math.floor(Math.random() * emptyFields.length)];
 
                 predArr.push(new Predator(pos[0], pos[1]));
                 matrix[pos[1]][pos[0]] = this.colorValue;
