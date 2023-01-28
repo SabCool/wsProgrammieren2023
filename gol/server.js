@@ -1,6 +1,16 @@
 const express = require('express');
 const app = express();
 
+let httpServer = require('http').Server(app);
+let {Server} = require('socket.io');
+const io = new Server(httpServer);
+
+app.use(express.static('./'));
+
+app.get('./', function(req, res){
+    res.redirect('index.html');
+});
+
 const Grass = require('./grass.js');
 const Grazer = require('./grazer.js');
 const Predator = require('./predator.js');
@@ -18,6 +28,8 @@ matrix = [
 grassArr = [];
 grazerArr = [];
 predArr = [];
+
+let isRaining = false;
 
 function getRandomMatrix(width, height) {
     // erstellt matrix
@@ -81,13 +93,23 @@ function updateGame() {
     for (let i = 0; i < predArr.length; i++) {
         predArr[i].eat();
     }
-
-    console.log(matrix);
+    // console.log(matrix);
+    console.log('send matrix');
+    io.emit('send matrix', matrix);
 }
 
+io.on('connection', function(socket){
+    console.log('client ws connection established...');
+    
+    // client hat nachricht geschickt
+    socket.on('kill', function (data){
+        console.log('client wants to kill sth', data);
+       
+    });
 
+});
 
-app.listen(3000, () => {
+httpServer.listen(3000, () => {
     console.log("Server gestartet auf Port 3000");
     // game start
     initGame();
@@ -95,4 +117,11 @@ app.listen(3000, () => {
         updateGame();
     }, 1000);
 
+    setInterval(function(){
+        isRaining = !isRaining;
+        io.emit('isRaining', isRaining);
+        console.log('Regnet es: ', isRaining);
+    }, 5000);
+
 });
+
