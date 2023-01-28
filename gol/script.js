@@ -3,10 +3,8 @@ let matrixSize = 50;
 
 let isRaining = false;
 
-let socket = io();
-
 function main(){
-    
+    const socket = io();
     // server hat matrix geschickt
     socket.on('send matrix', drawMatrix);
     // server hat regen nachricht geschickt
@@ -14,27 +12,25 @@ function main(){
 
     let myKillBtn = document.getElementById('killButton');
     myKillBtn.addEventListener('click', killHandler);
-}
 
-function rainHandler(data){
-    console.log("Regnet es: ",data);
-    isRaining = data;
-}
-
-function killHandler(event){
-    console.log("Kill Button geklickt....");
-    // send webSocket Nachricht an Server
-    socket.emit('kill', 10);
+    function rainHandler(data){
+        console.log("Regnet es: ",data);
+        isRaining = data;
+    }
+    
+    function killHandler(event){
+        console.log("Kill Button geklickt....");
+        // send webSocket Nachricht an Server
+        socket.emit('kill', 10);
+    }
 }
 
 // einmal bei Programmstart
 function setup() {
     createCanvas(matrixSize * side + 1, matrixSize * side + 1);
     background('#acacac');
-
 }
 
-// wiederholend
 function drawMatrix(matrix) {
     for (let y = 0; y < matrix.length; y++) {
         for (let x = 0; x < matrix[y].length; x++) {
@@ -55,4 +51,3 @@ function drawMatrix(matrix) {
 }
 
 window.onload = main;
-

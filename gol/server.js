@@ -98,12 +98,21 @@ function updateGame() {
     io.emit('send matrix', matrix);
 }
 
+function killGrass (){
+    for (let i = 0; i < grassArr.length; i++) {
+        let grObj = grassArr[i];
+        matrix[grObj.y][grObj.x] = 0;
+   }
+   grassArr = [];
+}
+
 io.on('connection', function(socket){
     console.log('client ws connection established...');
     
     // client hat nachricht geschickt
     socket.on('kill', function (data){
         console.log('client wants to kill sth', data);
+       killGrass();
        
     });
 
